@@ -1,0 +1,14 @@
+{
+  "wechat": {
+    "tokenMode": "local",
+    "appId": "wx_your_app_id",
+    "appSecret": "your_app_secret",
+    "author": "作者名称",
+    "original": true
+  },
+  "center": {
+    "url": "https://api.example.com",
+    "apiKey": "your_center_api_key",
+    "account": "acct_xxx"
+  }
+}

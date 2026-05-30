@@ -1,0 +1,12 @@
+section[data-wp-role="article"] strong {
+  color: #159a7d;
+}
+
+section[data-wp-role="article"] h2 {
+  border-left: 4px solid #26a98b;
+  padding-left: 12px;
+}
+
+section[data-wp-role="article"] pre {
+  background: #14201e;
+}

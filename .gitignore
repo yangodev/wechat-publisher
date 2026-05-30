@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.playwright-cli/
+coverage/
+.DS_Store
+*.log
+fixtures/**/dist/
+fixtures/**/dist-*/
+fixtures/**/.tmp/
+output/
+release/
+*.tgz
+wechat-publisher.config.json
+.wechat-publisher.config.json

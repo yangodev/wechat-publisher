@@ -1,0 +1,60 @@
+{
+  "name": "@yangodev/wechat-publisher",
+  "version": "0.3.0",
+  "description": "本地 Markdown 转微信公众号预览、打包和草稿箱发布 CLI。",
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yangodev/wechat-publisher.git"
+  },
+  "homepage": "https://github.com/yangodev/wechat-publisher#readme",
+  "bugs": {
+    "url": "https://github.com/yangodev/wechat-publisher/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "bin": {
+    "wechat-publisher": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "docs",
+    "LICENSE",
+    "TRADEMARKS.md",
+    "wechat-publisher.config.example.json"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx src/cli.ts",
+    "check": "tsc -p tsconfig.json --noEmit",
+    "pack:cli": "node scripts/pack-cli.mjs",
+    "smoke:diagnostics": "node scripts/diagnostics-smoke.mjs",
+    "fixture:render": "tsx src/cli.ts render fixtures/basic-article/article.md --out fixtures/basic-article/dist",
+    "fixture:check": "tsx src/cli.ts check fixtures/basic-article/article.md",
+    "fixture:verify": "tsx src/cli.ts verify fixtures/basic-article/article.md --out fixtures/basic-article/dist-verify",
+    "fixture:draft:dry-run": "tsx src/cli.ts draft fixtures/basic-article/article.md --config wechat-publisher.config.example.json --dry-run --out fixtures/basic-article/dist-draft-dry-run",
+    "visual:install": "playwright install chromium",
+    "visual:qa": "tsx src/visual-qa-runner.ts",
+    "fixture:visual": "npm run fixture:render && tsx src/visual-qa-runner.ts fixtures/basic-article/dist"
+  },
+  "dependencies": {
+    "cheerio": "^1.0.0",
+    "commander": "^12.1.0",
+    "gray-matter": "^4.0.3",
+    "image-size": "^1.2.1",
+    "juice": "^10.0.0",
+    "markdown-it": "^14.1.0",
+    "mime-types": "^2.1.35",
+    "playwright": "^1.52.0",
+    "postcss": "^8.4.49"
+  },
+  "devDependencies": {
+    "@types/markdown-it": "^14.1.2",
+    "@types/mime-types": "^2.1.4",
+    "@types/node": "^22.10.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}

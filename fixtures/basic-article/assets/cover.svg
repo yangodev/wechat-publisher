@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675">
+  <rect width="1200" height="675" fill="#f6faf8"/>
+  <rect x="80" y="90" width="1040" height="495" rx="24" fill="#0f1716"/>
+  <text x="130" y="210" fill="#f4fffb" font-family="Arial, sans-serif" font-size="58" font-weight="700">新 AI 工具进工作流前</text>
+  <text x="130" y="292" fill="#f4fffb" font-family="Arial, sans-serif" font-size="58" font-weight="700">先问 6 个问题</text>
+  <rect x="130" y="350" width="175" height="10" rx="5" fill="#50e3c2"/>
+  <text x="130" y="440" fill="#a9bbb6" font-family="Arial, sans-serif" font-size="30">不要收藏工具，要沉淀流程</text>
+</svg>
