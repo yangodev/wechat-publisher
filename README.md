@@ -23,6 +23,7 @@ v0.2 增加微信公众号草稿箱发布能力，并支持两种 token 模式�
 
 更多设计说明：
 
+- `docs/quickstart.md`：外部用户 10 分钟跑通指南
 - `docs/v0.2-draft-api-token-modes.md`：草稿箱发布与 token 模式设计
 - `docs/distribution.md`：开源 Skill 与 CLI 包分发方式
 
@@ -48,6 +49,8 @@ Skill 很轻，只告诉 Codex 如何使用 CLI，不包含 CLI 的完整实现�
 npm install -g @yangodev/wechat-publisher
 wechat-publisher --help
 ```
+
+第一次使用可以先按 `docs/quickstart.md` 跑通本地检查和草稿提交预览。
 
 本地测试发包：
 
