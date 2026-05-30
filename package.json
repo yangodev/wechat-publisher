@@ -16,7 +16,7 @@
     "access": "public"
   },
   "bin": {
-    "wechat-publisher": "./dist/cli.js"
+    "wechat-publisher": "dist/cli.js"
   },
   "files": [
     "dist",
