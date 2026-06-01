@@ -121,9 +121,12 @@ npm install
 npm run build
 npm run check
 npm run pack:cli
+npm run smoke:doctor
+npm run smoke:compatibility
 npm run smoke:diagnostics
 npm run visual:install
 npm run dev -- init --mode local --app-id wx_xxx --app-secret secret --author "作者名称"
+npm run dev -- doctor --config wechat-publisher.config.json --article fixtures/basic-article/article.md
 npm run dev -- render fixtures/basic-article/article.md --out fixtures/basic-article/dist
 npm run dev -- check fixtures/basic-article/article.md
 npm run dev -- package fixtures/basic-article/article.md --out fixtures/basic-article/dist
@@ -154,6 +157,15 @@ node dist/cli.js render fixtures/basic-article/article.md --out fixtures/basic-a
 `package` 会写入同样的打包素材，但不生成 `preview.html`。
 
 `check` 会校验输入内容；如果发现阻塞错误，退出码为 `2`。
+
+`doctor` 会检查本机环境、发布配置、文章渲染和已有发布包：
+
+```bash
+npm run dev -- doctor --article article.md
+npm run dev -- doctor --config wechat-publisher.config.json --package dist
+```
+
+它不会调用微信 API，也不会输出 AppSecret、中心 API key 或 `access_token`。如果要在 CI 或脚本中读取结果，可以加 `--json`。
 
 `verify` 会运行完整的本地发布前检查：
 

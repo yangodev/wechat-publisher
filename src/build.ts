@@ -8,6 +8,7 @@ import { renderMarkdown } from "./markdown.js";
 import { normalizeArticleHtml } from "./normalize-html.js";
 import { processContentImages, processCover } from "./assets.js";
 import { inlineTheme, loadTheme } from "./theme.js";
+import { checkWechatCompatibility } from "./wechat-compatibility.js";
 import { createArticlePackage } from "./package.js";
 import { createPublishReport } from "./report.js";
 import { renderPreview } from "./preview.js";
@@ -63,6 +64,8 @@ export async function buildArticle(rawOptions: BuildOptions): Promise<BuildResul
   if (articleHtml.includes(inputDir)) {
     addError(checks, "html.absolute_path", "article.html 中包含本机绝对路径。");
   }
+
+  checkWechatCompatibility(articleHtml, checks, { title: metadata.title });
 
   addInfo(checks, "render.complete", "Markdown 已渲染为公众号 HTML。");
   finalizeChecks(checks);

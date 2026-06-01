@@ -5,6 +5,7 @@ import { Command } from "commander";
 import { buildArticle } from "./build.js";
 import { loadPublisherConfig } from "./config.js";
 import { createDraftFromPackage, printDraftSummary, type TokenMode } from "./draft.js";
+import { runDoctor } from "./doctor.js";
 import { initPublisherConfig } from "./init-config.js";
 import type { BuildOptions, BuildResult } from "./types.js";
 import { VERSION } from "./version.js";
@@ -33,6 +34,26 @@ program
   .option("--force", "overwrite an existing config file")
   .action(async (options: InitCliOptions) => {
     await runInit(options);
+  });
+
+program
+  .command("doctor")
+  .description("Diagnose local config, render compatibility, and article packages before creating WeChat drafts.")
+  .option("--config <file>", "publisher config JSON file")
+  .option("--token-mode <mode>", "token mode: local or center")
+  .option("--article <file>", "Markdown article path to render-check")
+  .option("--package <package-or-dir>", "article-package.json path or rendered output directory to validate")
+  .option("--json", "print machine-readable JSON")
+  .option("--strict", "exit non-zero on warnings")
+  .action(async (options: DoctorCliOptions) => {
+    await runDoctor({
+      config: options.config,
+      tokenMode: options.tokenMode,
+      article: options.article,
+      packageInput: options.package,
+      json: Boolean(options.json),
+      strict: Boolean(options.strict),
+    });
   });
 
 program
@@ -211,6 +232,15 @@ interface DraftCliOptions extends CliOptions {
   original?: boolean;
   dryRun?: boolean;
   submitPreview?: boolean;
+}
+
+interface DoctorCliOptions {
+  config?: string;
+  tokenMode?: string;
+  article?: string;
+  package?: string;
+  json?: boolean;
+  strict?: boolean;
 }
 
 interface InitCliOptions {

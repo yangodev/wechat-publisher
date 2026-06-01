@@ -65,6 +65,7 @@ EOF
 ## 3. 本地检查
 
 ```bash
+wechat-publisher doctor --article article.md
 wechat-publisher check article.md
 ```
 
@@ -75,6 +76,8 @@ status: ready
 errors: 0
 warnings: 0
 ```
+
+`doctor` 用来检查运行环境、配置文件和文章渲染兼容性。还没配置真实公众号时，它可能提示配置文件不存在，不影响本地渲染检查。
 
 ## 4. 生成草稿提交预览
 
