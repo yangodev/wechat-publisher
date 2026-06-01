@@ -1,6 +1,6 @@
 {
   "name": "@yangodev/wechat-publisher",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "本地 Markdown 转微信公众号预览、打包和草稿箱发布 CLI。",
   "type": "module",
   "license": "MIT",

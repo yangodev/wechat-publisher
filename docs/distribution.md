@@ -21,7 +21,7 @@ npm run pack:cli
 该命令会运行类型检查、构建 `dist/`，并把安装包写到 `release/`，例如：
 
 ```txt
-release/yangodev-wechat-publisher-0.3.0.tgz
+release/yangodev-wechat-publisher-0.3.1.tgz
 ```
 
 在用户机器上安装公开包：
@@ -34,7 +34,7 @@ wechat-publisher --help
 发布前测试本地包：
 
 ```bash
-npm install -g ./release/yangodev-wechat-publisher-0.3.0.tgz
+npm install -g ./release/yangodev-wechat-publisher-0.3.1.tgz
 wechat-publisher --help
 ```
 
@@ -78,6 +78,8 @@ cp -R skills/wechat-publisher .codex/skills/
 ```bash
 npm run check
 npm run build
+npm run smoke:doctor
+npm run smoke:compatibility
 npm run smoke:diagnostics
 npm run pack:cli
 ```
@@ -85,16 +87,16 @@ npm run pack:cli
 然后在干净目录测试安装包：
 
 ```bash
-npm install -g ./release/yangodev-wechat-publisher-0.3.0.tgz
+npm install -g ./release/yangodev-wechat-publisher-0.3.1.tgz
 wechat-publisher --version
 wechat-publisher --help
 ```
 
 ## npm 发布
 
-npm 发布由 tag 触发。推送 `v*` tag 后，GitHub Actions 会运行检查、构建、诊断冒烟测试，并带 provenance 发布到 npm：
+npm 发布由 tag 触发。推送 `v*` tag 后，GitHub Actions 会运行检查、构建、doctor/兼容性/诊断冒烟测试，并带 provenance 发布到 npm：
 
 ```bash
-git tag v0.3.0
-git push origin v0.3.0
+git tag v0.3.1
+git push origin v0.3.1
 ```

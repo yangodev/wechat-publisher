@@ -61,7 +61,7 @@ npm run pack:cli
 在用户机器上安装生成的本地包：
 
 ```bash
-npm install -g ./release/yangodev-wechat-publisher-0.3.0.tgz
+npm install -g ./release/yangodev-wechat-publisher-0.3.1.tgz
 wechat-publisher --help
 ```
 

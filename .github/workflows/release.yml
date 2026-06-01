@@ -32,6 +32,12 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Doctor smoke
+        run: npm run smoke:doctor
+
+      - name: Compatibility smoke
+        run: npm run smoke:compatibility
+
       - name: Diagnostics smoke
         run: npm run smoke:diagnostics
 
