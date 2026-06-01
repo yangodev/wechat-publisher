@@ -32,14 +32,17 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Publisher smoke
+        run: npm run smoke:publisher
+
       - name: Doctor smoke
         run: npm run smoke:doctor
 
-      - name: Compatibility smoke
-        run: npm run smoke:compatibility
-
       - name: Diagnostics smoke
         run: npm run smoke:diagnostics
+
+      - name: Draft dry-run fixture
+        run: npm run fixture:draft:dry-run
 
       - name: Publish to npm
         run: npm publish --provenance

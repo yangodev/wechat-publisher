@@ -1,5 +1,3 @@
-export type CheckLevel = "error" | "warning" | "info";
-
 export interface CheckItem {
   code: string;
   message: string;
@@ -17,16 +15,6 @@ export interface Checks {
     remote_asset_count: number;
     absolute_path_count: number;
   };
-}
-
-export interface ArticleMetadata {
-  title?: string;
-  author?: string;
-  digest?: string;
-  cover?: string;
-  theme?: string;
-  source_url?: string;
-  tags?: string[];
 }
 
 export interface AssetRecord {
@@ -67,7 +55,7 @@ export interface ArticlePackage {
   package_id: string;
   created_at: string;
   generator: {
-    name: "wechat-publisher";
+    name: "wechat-renderer" | "wechat-publisher";
     version: string;
     mode: "local-render";
   };
@@ -110,47 +98,4 @@ export interface ArticlePackage {
     status: "not_started";
   }>;
   extensions: Record<string, unknown>;
-}
-
-export interface BuildOptions {
-  mode: "render" | "package" | "check";
-  input: string;
-  outDir: string;
-  theme?: string;
-  metadata?: string;
-  cover?: string;
-  strict?: boolean;
-  preview: boolean;
-  writeOutputs: boolean;
-}
-
-export interface BuildResult {
-  articleHtml: string;
-  previewHtml: string | null;
-  articlePackage: ArticlePackage;
-  report: PublishReport;
-}
-
-export interface PublishReport {
-  status: Checks["status"];
-  input: {
-    markdown_path: string;
-    metadata_path: string | null;
-    theme_path: string | null;
-    cover_path: string | null;
-  };
-  output: {
-    out_dir: string;
-    article_html_path: string;
-    preview_html_path: string | null;
-    article_package_path: string;
-    publish_report_path: string;
-    assets_dir: string;
-  };
-  article: ArticlePackage["article"];
-  theme: ArticlePackage["theme"];
-  cover: CoverRecord | null;
-  assets: AssetRecord[];
-  checks: Checks;
-  ready_for_v02: boolean;
 }

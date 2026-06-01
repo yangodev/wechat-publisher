@@ -4,8 +4,10 @@ import { spawnSync } from "node:child_process";
 import path from "node:path";
 
 const releaseDir = path.resolve("release");
+const distDir = path.resolve("dist");
 
 await rm(releaseDir, { recursive: true, force: true });
+await rm(distDir, { recursive: true, force: true });
 await mkdir(releaseDir, { recursive: true });
 
 run("npm", ["run", "check"]);

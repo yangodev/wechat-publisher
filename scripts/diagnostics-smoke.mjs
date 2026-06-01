@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 import { spawn } from "node:child_process";
-import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdtemp, readFile, rm } from "node:fs/promises";
 import http from "node:http";
 import { tmpdir } from "node:os";
 import path from "node:path";
+import { writeTestArticlePackage } from "./test-package-fixture.mjs";
 
 const cases = [
   {
@@ -44,35 +45,15 @@ const results = [];
 
 for (const testCase of cases) {
   const outDir = await mkdtemp(path.join(tmpdir(), "wechat-publisher-diagnostics-"));
-  const articlePath = path.join(outDir, "article.md");
-  const coverPath = path.join(outDir, "cover.png");
   try {
-    await writeFile(
-      coverPath,
-      Buffer.from(
-        "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=",
-        "base64",
-      ),
-    );
-    await writeFile(
-      articlePath,
-      `---
-title: 诊断冒烟测试
-author: YanGo
-digest: 用于测试中心 token 诊断，不依赖封面或图片素材。
-cover: ./cover.png
----
-
-# 诊断冒烟测试
-
-这是一篇只用于本地诊断测试的临时文章。
-`,
-      "utf8",
-    );
+    await writeTestArticlePackage(outDir, {
+      title: "诊断冒烟测试",
+      digest: "用于测试中心 token 诊断。",
+    });
     await withServer(testCase, async (centerUrl) => {
-      const result = await runCli([
+      const result = await runCli("dist/publisher-cli.js", [
         "draft",
-        articlePath,
+        outDir,
         "--token-mode",
         "center",
         "--center-url",
@@ -142,9 +123,9 @@ async function withServer(testCase, fn) {
   }
 }
 
-function runCli(args) {
+function runCli(entry, args) {
   return new Promise((resolve) => {
-    const child = spawn(process.execPath, ["dist/cli.js", ...args], {
+    const child = spawn(process.execPath, [entry, ...args], {
       cwd: process.cwd(),
       env: {
         ...process.env,

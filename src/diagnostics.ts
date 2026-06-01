@@ -1,4 +1,4 @@
-import type { CheckItem } from "./types.js";
+import type { CheckItem } from "./article-package.js";
 
 interface DiagnosticInput {
   code: string;

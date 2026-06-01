@@ -1,10 +1,8 @@
-import os from "node:os";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-import { buildArticle } from "./build.js";
 import { loadPublisherConfig, type PublisherConfig } from "./config.js";
 import { pathExists } from "./fs-utils.js";
-import type { ArticlePackage, Checks } from "./types.js";
+import type { ArticlePackage } from "./article-package.js";
 import { VERSION } from "./version.js";
 
 type DoctorStatus = "ready" | "warning" | "blocked";
@@ -13,7 +11,6 @@ type DoctorCheckStatus = "pass" | "warn" | "fail" | "info";
 export interface DoctorOptions {
   config?: string;
   tokenMode?: string;
-  article?: string;
   packageInput?: string;
   json?: boolean;
   strict?: boolean;
@@ -71,7 +68,7 @@ async function createDoctorReport(options: DoctorOptions): Promise<DoctorReport>
   if (configResolution.error) {
     addCheck(checks, "fail", "config.missing", configResolution.error, configResolution.path ?? undefined);
   } else if (!configResolution.path) {
-    addCheck(checks, "warn", "config.not_found", "未找到配置文件。渲染功能可用，发布草稿前建议运行 `wechat-publisher init`。");
+    addCheck(checks, "warn", "config.not_found", "未找到配置文件。发布草稿前建议运行 `wechat-publisher init`。");
   } else {
     try {
       config = await loadPublisherConfig(configResolution.path);
@@ -84,10 +81,6 @@ async function createDoctorReport(options: DoctorOptions): Promise<DoctorReport>
 
   const tokenMode = options.tokenMode ?? config.wechat?.tokenMode ?? "local";
   addTokenModeChecks(checks, tokenMode, config);
-
-  if (options.article) {
-    await addArticleChecks(checks, options.article);
-  }
 
   if (options.packageInput) {
     await addPackageChecks(checks, options.packageInput);
@@ -199,44 +192,6 @@ function addTokenModeChecks(checks: DoctorCheck[], tokenMode: string, config: Pu
     addCheck(checks, "pass", "token.center.account", "已配置中心服务账号。");
   } else {
     addCheck(checks, "warn", "token.center.missing_account", "中心模式缺少 center.account。");
-  }
-}
-
-async function addArticleChecks(checks: DoctorCheck[], articlePath: string): Promise<void> {
-  const resolved = path.resolve(articlePath);
-  if (!(await pathExists(resolved))) {
-    addCheck(checks, "fail", "article.missing", "文章文件不存在。", resolved);
-    return;
-  }
-
-  try {
-    const result = await buildArticle({
-      mode: "check",
-      input: resolved,
-      outDir: path.join(os.tmpdir(), `wechat-publisher-doctor-${Date.now()}`),
-      preview: false,
-      writeOutputs: false,
-    });
-    addChecksFromRender(checks, result.report.checks);
-    if (result.report.checks.errors.length === 0) {
-      addCheck(checks, "pass", "article.render", "文章可以成功渲染。", resolved);
-    }
-  } catch (error) {
-    addCheck(checks, "fail", "article.render_failed", `文章渲染失败：${errorMessage(error)}`, resolved);
-  }
-}
-
-function addChecksFromRender(checks: DoctorCheck[], renderChecks: Checks): void {
-  for (const item of renderChecks.errors) {
-    addCheck(checks, "fail", `render.${item.code}`, item.message, item.path);
-  }
-
-  for (const item of renderChecks.warnings) {
-    addCheck(checks, "warn", `render.${item.code}`, item.message, item.path);
-  }
-
-  for (const item of renderChecks.infos) {
-    addCheck(checks, "info", `render.${item.code}`, item.message, item.path);
   }
 }
 

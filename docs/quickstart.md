@@ -1,10 +1,8 @@
-# 10 分钟跑通
+# 10 分钟跑通 WeChat Publisher
 
-这份指南面向第一次使用 `wechat-publisher` 的用户。目标是先在本地跑通渲染、检查和草稿提交预览，再按需配置真实微信公众号草稿箱。
+这份指南面向第一次使用 `@yangodev/wechat-publisher` 的用户。目标是从已渲染的文章包创建微信公众号草稿提交预览。
 
 ## 1. 安装 CLI
-
-需要本机已经安装 Node.js 和 npm。
 
 ```bash
 npm install -g @yangodev/wechat-publisher
@@ -12,72 +10,29 @@ wechat-publisher --version
 wechat-publisher --help
 ```
 
-## 2. 准备一篇测试文章
-
-新建一个空目录，然后写入测试文章和占位封面：
+如果你还没有文章包，先安装 renderer：
 
 ```bash
-mkdir wechat-publisher-demo
-cd wechat-publisher-demo
-mkdir -p assets
+npm install -g @yangodev/wechat-renderer
+wechat-renderer render article.md --out dist
 ```
 
-生成一个本地 PNG 占位封面：
+## 2. 准备文章包
+
+`wechat-publisher` 的输入必须是：
+
+- `article-package.json`
+- 或包含 `article-package.json` 的目录
+
+它不接受 Markdown 文件。Markdown 到文章包的转换由 `@yangodev/wechat-renderer` 完成。
+
+## 3. 本地诊断
 
 ```bash
-node -e "require('fs').writeFileSync('assets/cover.png', Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAFgwJ/l9m7ZQAAAABJRU5ErkJggg==','base64'))"
+wechat-publisher doctor --package dist
 ```
 
-写入 `article.md`：
-
-````bash
-cat > article.md <<'EOF'
----
-title: 新 AI 工具值不值得进工作流，看这 6 个问题
-digest: 工具不是收藏品，而是让下一次工作更容易的节点。
-author: YanGo
-cover: ./assets/cover.png
----
-
-# 新 AI 工具值不值得进工作流，看这 6 个问题
-
-不要看它多火，先看它能不能成为稳定节点。
-
-## 先问 6 个问题
-
-一个工具值得进入工作流，至少要满足下面几件事中的两件：
-
-- 减少重复劳动
-- 降低出错率
-- 让产出更稳定
-- 让资料更容易归档
-- 让反馈更容易回写
-- 能被下一次任务复用
-
-```txt
-输入 -> 处理 -> 输出 -> 复盘
-```
-EOF
-````
-
-这张占位封面只用于本地跑通流程。正式草稿请换成自己的 PNG 或 JPEG 封面。
-
-## 3. 本地检查
-
-```bash
-wechat-publisher doctor --article article.md
-wechat-publisher check article.md
-```
-
-正常情况下会看到：
-
-```txt
-status: ready
-errors: 0
-warnings: 0
-```
-
-`doctor` 用来检查运行环境、配置文件和文章渲染兼容性。还没配置真实公众号时，它可能提示配置文件不存在，不影响本地渲染检查。
+还没配置真实公众号时，它可能提示配置文件不存在，不影响 dry-run。
 
 ## 4. 生成草稿提交预览
 
@@ -85,25 +40,14 @@ warnings: 0
 
 ```bash
 WECHAT_MP_APP_ID=dummy WECHAT_MP_APP_SECRET=dummy \
-  wechat-publisher draft article.md --out dist --dry-run --submit-preview
+  wechat-publisher draft dist --dry-run --submit-preview
 ```
 
 成功后会生成：
 
-- `dist/preview.html`：本地预览
-- `dist/article.html`：微信公众号正文 HTML 片段
-- `dist/article-package.json`：文章包
-- `dist/publish-report.json`：本地检查报告
-- `dist/wechat-submit.html`：提交微信前的正文预览
-- `dist/wechat-draft-payload.json`：草稿 payload 预览
-- `dist/wechat-draft-report.json`：草稿流程报告
-
-可以直接用浏览器打开：
-
-```bash
-open dist/preview.html
-open dist/wechat-submit.html
-```
+- `wechat-submit.html`：提交微信前的正文预览
+- `wechat-draft-payload.json`：草稿 payload 预览
+- `wechat-draft-report.json`：草稿流程报告
 
 ## 5. 配置真实微信公众号草稿箱
 
@@ -119,19 +63,15 @@ wechat-publisher init \
   --author "作者名称"
 ```
 
-配置会写入当前目录的 `wechat-publisher.config.json`。这个文件只应该保存在本机，不要提交到 Git 仓库。
-
 创建草稿：
 
 ```bash
-wechat-publisher draft article.md --out dist
+wechat-publisher draft dist
 ```
 
 这个命令只创建微信公众号草稿，不会公开发表文章。
 
 ## 6. 使用中心 token 模式
-
-如果你已经有可用的中心 token 服务，也可以初始化为 `center` 模式：
 
 ```bash
 wechat-publisher init \
@@ -143,28 +83,3 @@ wechat-publisher init \
 ```
 
 `center` 模式只从中心服务获取短期 token。图片上传和草稿创建仍然在本机完成。
-
-## 7. 可选：安装 Codex Skill
-
-Skill 不是 CLI 本体，只负责告诉 Codex 如何调用 `wechat-publisher`。
-
-在你的项目目录里执行：
-
-```bash
-git clone https://github.com/yangodev/skills.git /tmp/yangodev-skills
-mkdir -p .codex/skills
-cp -R /tmp/yangodev-skills/skills/wechat-publisher .codex/skills/
-```
-
-然后在 Codex 中让它使用 `wechat-publisher` Skill 处理文章发布检查或草稿生成。
-
-## 常见问题
-
-- `cover.missing`：文章没有配置封面。微信草稿需要封面图。
-- `cover.unsupported_svg`：微信草稿 API 不支持 SVG 封面，请改用 PNG 或 JPEG。
-- `wechat.ip_allowlist`：本机公网 IP 没有加入微信公众号 IP 白名单。
-- `wechat.invalid_app_secret`：AppSecret 不正确，或和 AppID 不匹配。
-- `center.unauthorized`：中心 API key 缺失或错误。
-- `center.rate_limited`：请求触发频率限制。
-
-诊断报告不会写入 AppSecret、中心 API key 或 `access_token`。

@@ -13,7 +13,7 @@ import {
   diagnoseDraftError,
   sanitizeDiagnosticMessage,
 } from "./diagnostics.js";
-import type { ArticlePackage, AssetRecord, CheckItem, CoverRecord } from "./types.js";
+import type { ArticlePackage, AssetRecord, CheckItem, CoverRecord } from "./article-package.js";
 import { pathExists } from "./fs-utils.js";
 import { VERSION } from "./version.js";
 

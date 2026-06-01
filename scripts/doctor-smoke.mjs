@@ -3,6 +3,7 @@ import { spawn } from "node:child_process";
 import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
+import { writeTestArticlePackage } from "./test-package-fixture.mjs";
 
 const tempDir = await mkdtemp(path.join(tmpdir(), "wechat-publisher-doctor-"));
 const secret = "doctor-secret-should-not-leak";
@@ -27,7 +28,7 @@ try {
     "utf8",
   );
 
-  const localResult = await runCli(["doctor", "--config", localConfigPath, "--json"]);
+  const localResult = await runCli("dist/publisher-cli.js", ["doctor", "--config", localConfigPath, "--json"]);
   assert(localResult.code === 0, `local doctor expected exit 0, got ${localResult.code}`);
   assert(!combinedOutput(localResult).includes(secret), "local doctor leaked appSecret");
   const localReport = JSON.parse(localResult.stdout);
@@ -53,29 +54,29 @@ try {
     ),
     "utf8",
   );
-  const centerResult = await runCli(["doctor", "--config", centerConfigPath, "--json"]);
+  const centerResult = await runCli("dist/publisher-cli.js", ["doctor", "--config", centerConfigPath, "--json"]);
   assert(centerResult.code === 0, `center doctor expected exit 0, got ${centerResult.code}`);
   const centerReport = JSON.parse(centerResult.stdout);
   assert(centerReport.status === "warning", `center doctor expected warning, got ${centerReport.status}`);
   assert(hasCheck(centerReport, "token.center.missing_api_key", "warn"), "center doctor did not warn for missing apiKey");
 
-  const articleResult = await runCli(["doctor", "--article", "fixtures/basic-article/article.md", "--json"]);
-  assert(articleResult.code === 0, `article doctor expected exit 0, got ${articleResult.code}`);
-  const articleReport = JSON.parse(articleResult.stdout);
-  assert(hasCheck(articleReport, "article.render", "pass"), "article doctor did not render article");
-  assert(
-    hasCheck(articleReport, "render.wechat.duplicate_title_h1", "info"),
-    "article doctor did not surface duplicate-title H1 compatibility info",
-  );
+  const packageDir = path.join(tempDir, "package");
+  await writeTestArticlePackage(packageDir);
+  const packageResult = await runCli("dist/publisher-cli.js", ["doctor", "--config", localConfigPath, "--package", packageDir, "--json"]);
+  assert(packageResult.code === 0, `package doctor expected exit 0, got ${packageResult.code}`);
+  const packageReport = JSON.parse(packageResult.stdout);
+  assert(packageReport.status === "ready", `package doctor expected ready, got ${packageReport.status}`);
+  assert(hasCheck(packageReport, "package.schema", "pass"), "package doctor did not validate schema");
+  assert(hasCheck(packageReport, "package.content", "pass"), "package doctor did not validate content");
 
-  console.log(JSON.stringify({ status: "ok", cases: ["local-config", "center-config", "article-render"] }, null, 2));
+  console.log(JSON.stringify({ status: "ok", cases: ["local-config", "center-config", "package"] }, null, 2));
 } finally {
   await rm(tempDir, { recursive: true, force: true });
 }
 
-function runCli(args) {
+function runCli(entry, args) {
   return new Promise((resolve) => {
-    const child = spawn(process.execPath, ["dist/cli.js", ...args], {
+    const child = spawn(process.execPath, [entry, ...args], {
       cwd: process.cwd(),
       env: {
         ...process.env,
